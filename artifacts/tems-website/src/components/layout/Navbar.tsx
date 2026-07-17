@@ -1,7 +1,8 @@
 import { Link, useLocation } from "wouter";
-import { Stethoscope, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import logoImg from "@assets/0_Business_Card_1784263553137.png";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -19,7 +20,7 @@ export function Navbar() {
       <div className="container flex h-16 items-center mx-auto px-4 md:px-6">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Stethoscope className="h-6 w-6 text-primary" />
+            <img src={logoImg} alt="Tobago East Medical Services" className="h-9 w-9 rounded-full object-cover" />
             <span className="hidden font-serif font-bold sm:inline-block text-lg text-primary tracking-tight">
               Tobago East Medical
             </span>
@@ -42,7 +43,7 @@ export function Navbar() {
         {/* Mobile menu toggle */}
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <Link href="/" className="flex md:hidden items-center space-x-2">
-            <Stethoscope className="h-6 w-6 text-primary" />
+            <img src={logoImg} alt="Tobago East Medical Services" className="h-8 w-8 rounded-full object-cover" />
             <span className="font-serif font-bold text-lg text-primary tracking-tight">
               TEMS
             </span>

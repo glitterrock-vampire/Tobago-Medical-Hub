@@ -1,6 +1,6 @@
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { motion } from "framer-motion";
-import { Stethoscope } from "lucide-react";
+import drPhoto from "@assets/0_PHOTO-2026-07-16-23-05-10_1784263561449.jpg";
 
 export default function About() {
   return (
@@ -25,12 +25,16 @@ export default function About() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="rounded-3xl overflow-hidden bg-primary/5 aspect-[4/5] border border-primary/10 relative flex flex-col items-center justify-center"
+            className="rounded-3xl overflow-hidden aspect-[4/5] border border-primary/10 relative"
           >
-            {/* Placeholder for Dr. Quaccoo's photo */}
-            <div className="text-center p-8">
-               <Stethoscope className="w-32 h-32 text-primary opacity-20 mx-auto mb-6" />
-               <p className="text-sm text-primary/60 font-medium uppercase tracking-widest">Medical Director</p>
+            <img
+              src={drPhoto}
+              alt="Dr. Thea Quaccoo"
+              className="w-full h-full object-cover object-top"
+            />
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
+              <p className="text-white font-serif text-lg">Dr. Thea Quaccoo</p>
+              <p className="text-white/70 text-sm uppercase tracking-widest">Medical Director</p>
             </div>
           </motion.div>
 

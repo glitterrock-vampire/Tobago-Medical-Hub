@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Clock, MapPin, HeartPulse, UserRound, ArrowRight } from "lucide-react";
+import { MapPin, HeartPulse, UserRound, ArrowRight } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { EKG } from "@/components/shared/EKG";
+import drPhoto from "@assets/0_PHOTO-2026-07-16-23-05-10_1784263561449.jpg";
 
 export default function Home() {
   return (
@@ -90,13 +91,16 @@ export default function Home() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-secondary/10 rounded-2xl p-8 aspect-square flex flex-col justify-center items-center relative overflow-hidden border border-secondary/20"
+              className="rounded-2xl aspect-square relative overflow-hidden border border-secondary/20"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent pointer-events-none" />
-              <Stethoscope className="h-32 w-32 text-primary opacity-20 mb-8" />
-              <div className="text-center relative z-10">
-                <h3 className="text-3xl font-serif text-primary mb-2">Dr. Thea Quaccoo</h3>
-                <p className="text-secondary font-medium tracking-wider uppercase text-sm">Medical Director</p>
+              <img
+                src={drPhoto}
+                alt="Dr. Thea Quaccoo"
+                className="w-full h-full object-cover object-top"
+              />
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-primary/80 to-transparent p-6">
+                <h3 className="text-2xl font-serif text-white">Dr. Thea Quaccoo</h3>
+                <p className="text-white/70 text-sm font-medium tracking-wider uppercase">Medical Director</p>
               </div>
             </motion.div>
 
