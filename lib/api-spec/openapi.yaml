@@ -3,20 +3,29 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Tobago East Medical Services API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: services
+    description: Medical services
+  - name: appointments
+    description: Appointment management
+  - name: patients
+    description: Patient/contact management
+  - name: contact
+    description: Public enquiry form
+  - name: dashboard
+    description: CRM dashboard stats
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,253 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [services]
+      summary: List all available medical services
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  /appointments:
+    get:
+      operationId: listAppointments
+      tags: [appointments]
+      summary: List appointments (staff only)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, cancelled, completed]
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+        "401":
+          description: Unauthorized
+    post:
+      operationId: createAppointment
+      tags: [appointments]
+      summary: Book a new appointment (public)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentInput"
+      responses:
+        "201":
+          description: Appointment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "400":
+          description: Validation error
+
+  /appointments/stats:
+    get:
+      operationId: getAppointmentStats
+      tags: [dashboard]
+      summary: Dashboard statistics
+      responses:
+        "200":
+          description: Appointment stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentStats"
+        "401":
+          description: Unauthorized
+
+  /appointments/{id}:
+    get:
+      operationId: getAppointment
+      tags: [appointments]
+      summary: Get appointment details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Appointment details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateAppointment
+      tags: [appointments]
+      summary: Update appointment status or details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentUpdate"
+      responses:
+        "200":
+          description: Updated appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Appointment"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteAppointment
+      tags: [appointments]
+      summary: Delete an appointment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /patients:
+    get:
+      operationId: listPatients
+      tags: [patients]
+      summary: List patients/contacts (staff only)
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Patient"
+        "401":
+          description: Unauthorized
+
+  /patients/{id}:
+    get:
+      operationId: getPatient
+      tags: [patients]
+      summary: Get patient details with booking history
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Patient details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PatientDetail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updatePatient
+      tags: [patients]
+      summary: Update patient notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatientUpdate"
+      responses:
+        "200":
+          description: Updated patient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit a public enquiry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Enquiry submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactEnquiry"
+        "400":
+          description: Validation error
+
+  /contact/enquiries:
+    get:
+      operationId: listEnquiries
+      tags: [contact]
+      summary: List contact enquiries (staff only)
+      responses:
+        "200":
+          description: List of enquiries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactEnquiry"
+        "401":
+          description: Unauthorized
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +287,288 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        durationMinutes:
+          type: integer
+        isHomeVisitAvailable:
+          type: boolean
+      required: [id, name, description, category, durationMinutes, isHomeVisitAvailable]
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: integer
+        patientId:
+          type: integer
+        patientName:
+          type: string
+        patientEmail:
+          type: string
+        patientPhone:
+          type: string
+        serviceId:
+          type: integer
+        serviceName:
+          type: string
+        preferredDate:
+          type: string
+          format: date
+        preferredTime:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed]
+        isHomeVisit:
+          type: boolean
+        address:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        staffNotes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - patientId
+        - patientName
+        - patientEmail
+        - patientPhone
+        - serviceId
+        - serviceName
+        - preferredDate
+        - preferredTime
+        - status
+        - isHomeVisit
+        - address
+        - notes
+        - staffNotes
+        - createdAt
+        - updatedAt
+
+    AppointmentInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        phone:
+          type: string
+          minLength: 7
+        serviceId:
+          type: integer
+        preferredDate:
+          type: string
+          format: date
+        preferredTime:
+          type: string
+        isHomeVisit:
+          type: boolean
+        address:
+          type: string
+        notes:
+          type: string
+      required:
+        - firstName
+        - lastName
+        - email
+        - phone
+        - serviceId
+        - preferredDate
+        - preferredTime
+        - isHomeVisit
+
+    AppointmentUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed]
+        preferredDate:
+          type: string
+          format: date
+        preferredTime:
+          type: string
+        staffNotes:
+          type: string
+
+    AppointmentStats:
+      type: object
+      properties:
+        totalToday:
+          type: integer
+        totalThisWeek:
+          type: integer
+        totalPending:
+          type: integer
+        totalConfirmed:
+          type: integer
+        totalThisMonth:
+          type: integer
+        recentAppointments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Appointment"
+        byService:
+          type: array
+          items:
+            type: object
+            properties:
+              serviceName:
+                type: string
+              count:
+                type: integer
+            required: [serviceName, count]
+      required:
+        - totalToday
+        - totalThisWeek
+        - totalPending
+        - totalConfirmed
+        - totalThisMonth
+        - recentAppointments
+        - byService
+
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        totalAppointments:
+          type: integer
+        lastVisit:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - phone
+        - address
+        - notes
+        - totalAppointments
+        - lastVisit
+        - createdAt
+
+    PatientDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        totalAppointments:
+          type: integer
+        lastVisit:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        appointments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Appointment"
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - phone
+        - address
+        - notes
+        - totalAppointments
+        - lastVisit
+        - createdAt
+        - appointments
+
+    PatientUpdate:
+      type: object
+      properties:
+        notes:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+
+    ContactInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          
+        phone:
+          type: string
+        message:
+          type: string
+          minLength: 1
+      required: [name, email, message]
+
+    ContactEnquiry:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        message:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, name, email, phone, message, isRead, createdAt]

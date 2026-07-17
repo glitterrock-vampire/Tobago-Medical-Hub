@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Tobago East Medical Services"
+version = "1.0.0"
+id = "artifacts/tems-website"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20562
+
+[services.development]
+run = "pnpm --filter @workspace/tems-website run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tems-website", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/tems-website/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20562"
+BASE_PATH = "/"
