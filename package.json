@@ -6,13 +6,12 @@
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
+    "dev:local": "concurrently --kill-others-on-fail -n api,web,mock -c blue,green,yellow \"pnpm --filter @workspace/api-server run dev\" \"PORT=3000 BASE_PATH=/ pnpm --filter @workspace/tems-website run dev\" \"PORT=3001 BASE_PATH=/__mockup pnpm --filter @workspace/mockup-sandbox run dev\""
   },
   "private": true,
-  "dependencies": {
-    "@replit/connectors-sdk": "^0.4.1"
-  },
   "devDependencies": {
+    "concurrently": "^10.0.3",
     "prettier": "^3.9.5",
     "typescript": "~5.9.3"
   }
