@@ -1,0 +1,13 @@
+{
+  "buildCommand": "pnpm install && node artifacts/api-server/build-vercel.mjs && pnpm --filter @workspace/tems-website run build",
+  "outputDirectory": "artifacts/tems-website/dist/public",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/" }
+  ],
+  "functions": {
+    "api/index.mjs": {
+      "maxDuration": 30
+    }
+  }
+}

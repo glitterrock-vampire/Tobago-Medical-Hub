@@ -1,0 +1,14 @@
+# Keep the Vercel deployment lean — exclude things that aren't needed at build time
+
+# Replit-specific
+.cache/
+.local/
+.agents/
+
+# Development artifacts
+attached_assets/
+artifacts/mockup-sandbox/
+artifacts/*/dist/
+
+# Logs
+*.log
