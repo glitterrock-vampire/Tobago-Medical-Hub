@@ -11,7 +11,6 @@ import {
   SignUp,
 } from '@clerk/react';
 import { shadcn } from '@clerk/themes';
-import { publishableKeyFromHost } from '@clerk/react/internal';
 
 import NotFound from '@/pages/not-found';
 import Home from '@/pages/public/Home';
@@ -25,15 +24,11 @@ import Appointments from '@/pages/admin/Appointments';
 import Patients from '@/pages/admin/Patients';
 import Enquiries from '@/pages/admin/Enquiries';
 
-// REQUIRED — resolves the publishable key from hostname so the same
-// build serves multiple Clerk custom domains.
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-);
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
 
-// REQUIRED — empty in dev (Clerk hits dev FAPI directly), auto-set in prod.
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+// Optional: set VITE_CLERK_PROXY_URL to proxy Clerk through your own domain in production.
+// e.g. https://yourdomain.com/api/__clerk
+const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL as string | undefined;
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
