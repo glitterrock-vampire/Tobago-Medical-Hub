@@ -6,7 +6,6 @@
 .agents/
 
 # Development artifacts
-attached_assets/
 artifacts/mockup-sandbox/
 artifacts/*/dist/
 

@@ -1,26 +1,20 @@
 import { Router } from "express";
-import { db } from "@workspace/db";
-import { patientsTable, appointmentsTable, servicesTable } from "@workspace/db";
+import { patientsTable, appointmentsTable, servicesTable } from "@workspace/db/schema";
 import { eq, ilike, or, sql, desc } from "drizzle-orm";
-import { getAuth } from "@clerk/express";
 import {
   ListPatientsQueryParams,
   GetPatientParams,
   UpdatePatientParams,
   UpdatePatientBody,
 } from "@workspace/api-zod";
+import { requireAdmin } from "../middlewares/adminAuth";
+import { getDb, isDatabaseNotConfiguredError } from "../lib/db";
 
 const router = Router();
 
-const requireAuth = (req: any, res: any, next: any) => {
-  const auth = getAuth(req);
-  const userId = auth?.sessionClaims?.userId || auth?.userId;
-  if (!userId) return res.status(401).json({ error: "Unauthorized" });
-  next();
-};
-
-router.get("/patients", requireAuth, async (req, res) => {
+router.get("/patients", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const parsed = ListPatientsQueryParams.safeParse(req.query);
     const params = parsed.success ? parsed.data : {};
 
@@ -72,13 +66,18 @@ router.get("/patients", requireAuth, async (req, res) => {
 
     return res.json(rows);
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to list patients");
     return res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.get("/patients/:id", requireAuth, async (req, res) => {
+router.get("/patients/:id", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const parsed = GetPatientParams.safeParse(req.params);
     if (!parsed.success) return res.status(400).json({ error: "Invalid id" });
 
@@ -130,13 +129,18 @@ router.get("/patients/:id", requireAuth, async (req, res) => {
 
     return res.json({ ...patient, appointments });
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to get patient");
     return res.status(500).json({ error: "Internal server error" });
   }
 });
 
-router.patch("/patients/:id", requireAuth, async (req, res) => {
+router.patch("/patients/:id", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const paramsParsed = UpdatePatientParams.safeParse(req.params);
     if (!paramsParsed.success) return res.status(400).json({ error: "Invalid id" });
     const bodyParsed = UpdatePatientBody.safeParse(req.body);
@@ -170,6 +174,10 @@ router.patch("/patients/:id", requireAuth, async (req, res) => {
 
     return res.json(updated);
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to update patient");
     return res.status(500).json({ error: "Internal server error" });
   }

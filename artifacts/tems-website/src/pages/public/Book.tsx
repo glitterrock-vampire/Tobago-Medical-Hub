@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLocation } from "wouter";
+import { defaultServices } from "@/lib/default-services";
 
 const bookSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -53,6 +54,7 @@ export default function Book() {
   const [, setLocation] = useLocation();
   const createAppointment = useCreateAppointment();
   const { data: services } = useListServices();
+  const serviceList = Array.isArray(services) ? services : defaultServices;
   
   const form = useForm<z.infer<typeof bookSchema>>({
     resolver: zodResolver(bookSchema),
@@ -72,7 +74,7 @@ export default function Book() {
 
   const isHomeVisit = form.watch("isHomeVisit");
   const selectedServiceId = form.watch("serviceId");
-  const selectedService = services?.find(s => s.id === selectedServiceId);
+  const selectedService = serviceList.find(s => s.id === selectedServiceId);
 
   function onSubmit(values: z.infer<typeof bookSchema>) {
     createAppointment.mutate({ data: values }, {
@@ -195,7 +197,7 @@ export default function Book() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {services?.map(service => (
+                          {serviceList.map(service => (
                             <SelectItem key={service.id} value={service.id.toString()}>
                               {service.name}
                             </SelectItem>

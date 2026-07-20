@@ -1,12 +1,10 @@
 import { Router } from "express";
-import { db } from "@workspace/db";
 import {
   appointmentsTable,
   patientsTable,
   servicesTable,
-} from "@workspace/db";
+} from "@workspace/db/schema";
 import { eq, and, ilike, or, sql, desc, gte, lte } from "drizzle-orm";
-import { getAuth } from "@clerk/express";
 import {
   CreateAppointmentBody,
   UpdateAppointmentBody,
@@ -15,19 +13,15 @@ import {
   DeleteAppointmentParams,
   ListAppointmentsQueryParams,
 } from "@workspace/api-zod";
+import { sendAppointmentNotification } from "../lib/email";
+import { requireAdmin } from "../middlewares/adminAuth";
+import { getDb, isDatabaseNotConfiguredError } from "../lib/db";
+import { getDefaultServiceName } from "../lib/defaultServices";
 
 const router = Router();
 
-// Auth middleware
-const requireAuth = (req: any, res: any, next: any) => {
-  const auth = getAuth(req);
-  const userId = auth?.sessionClaims?.userId || auth?.userId;
-  if (!userId) return res.status(401).json({ error: "Unauthorized" });
-  next();
-};
-
 // Helper: build full appointment object with joins
-async function getAppointmentById(id: number) {
+async function getAppointmentById(db: Awaited<ReturnType<typeof getDb>>, id: number) {
   const rows = await db
     .select({
       id: appointmentsTable.id,
@@ -56,8 +50,9 @@ async function getAppointmentById(id: number) {
 }
 
 // GET /appointments — staff only
-router.get("/appointments", requireAuth, async (req, res) => {
+router.get("/appointments", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const parsed = ListAppointmentsQueryParams.safeParse(req.query);
     const params = parsed.success ? parsed.data : {};
 
@@ -106,6 +101,10 @@ router.get("/appointments", requireAuth, async (req, res) => {
 
     return res.json(rows);
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to list appointments");
     return res.status(500).json({ error: "Internal server error" });
   }
@@ -119,6 +118,7 @@ router.post("/appointments", async (req, res) => {
       return res.status(400).json({ error: "Invalid request", issues: parsed.error.issues });
     }
     const body = parsed.data;
+    const db = await getDb();
 
     // Upsert patient by email
     const existing = await db
@@ -167,17 +167,67 @@ router.post("/appointments", async (req, res) => {
       })
       .returning();
 
-    const full = await getAppointmentById(appt.id);
+    const full = await getAppointmentById(db, appt.id);
+    if (full) {
+      try {
+        await sendAppointmentNotification(full);
+      } catch (emailErr) {
+        req.log.error(
+          { err: emailErr, appointmentId: appt.id },
+          "Failed to send appointment notification email",
+        );
+      }
+    }
     return res.status(201).json(full);
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      const parsed = CreateAppointmentBody.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Invalid request", issues: parsed.error.issues });
+      }
+
+      const body = parsed.data;
+      const appointment = {
+        id: Date.now(),
+        patientId: 0,
+        patientName: `${body.firstName} ${body.lastName}`,
+        patientEmail: body.email,
+        patientPhone: body.phone,
+        serviceId: body.serviceId,
+        serviceName: getDefaultServiceName(body.serviceId),
+        preferredDate: body.preferredDate instanceof Date
+          ? body.preferredDate.toISOString().split("T")[0]
+          : String(body.preferredDate),
+        preferredTime: body.preferredTime,
+        status: "pending" as const,
+        isHomeVisit: body.isHomeVisit,
+        address: body.address ?? null,
+        notes: body.notes ?? null,
+        staffNotes: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      try {
+        await sendAppointmentNotification(appointment);
+      } catch (emailErr) {
+        req.log.error({ err: emailErr }, "Failed to send appointment notification email");
+        return res.status(503).json({ error: "Appointment email is not configured" });
+      }
+
+      req.log.warn("Database is not configured; appointment notification was emailed without persistence");
+      return res.status(202).json(appointment);
+    }
+
     req.log.error({ err }, "Failed to create appointment");
     return res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // GET /appointments/stats — staff only
-router.get("/appointments/stats", requireAuth, async (req, res) => {
+router.get("/appointments/stats", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const now = new Date();
     const todayStr = now.toISOString().split("T")[0];
     const weekStart = new Date(now);
@@ -245,28 +295,38 @@ router.get("/appointments/stats", requireAuth, async (req, res) => {
       byService,
     });
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to get appointment stats");
     return res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // GET /appointments/:id — staff only
-router.get("/appointments/:id", requireAuth, async (req, res) => {
+router.get("/appointments/:id", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const parsed = GetAppointmentParams.safeParse(req.params);
     if (!parsed.success) return res.status(400).json({ error: "Invalid id" });
-    const appt = await getAppointmentById(parsed.data.id);
+    const appt = await getAppointmentById(db, parsed.data.id);
     if (!appt) return res.status(404).json({ error: "Not found" });
     return res.json(appt);
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to get appointment");
     return res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // PATCH /appointments/:id — staff only
-router.patch("/appointments/:id", requireAuth, async (req, res) => {
+router.patch("/appointments/:id", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const paramsParsed = UpdateAppointmentParams.safeParse(req.params);
     if (!paramsParsed.success) return res.status(400).json({ error: "Invalid id" });
     const bodyParsed = UpdateAppointmentBody.safeParse(req.body);
@@ -289,22 +349,31 @@ router.patch("/appointments/:id", requireAuth, async (req, res) => {
       .set(updates as any)
       .where(eq(appointmentsTable.id, id));
 
-    const full = await getAppointmentById(id);
+    const full = await getAppointmentById(db, id);
     return res.json(full);
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to update appointment");
     return res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // DELETE /appointments/:id — staff only
-router.delete("/appointments/:id", requireAuth, async (req, res) => {
+router.delete("/appointments/:id", requireAdmin, async (req, res) => {
   try {
+    const db = await getDb();
     const parsed = DeleteAppointmentParams.safeParse(req.params);
     if (!parsed.success) return res.status(400).json({ error: "Invalid id" });
     await db.delete(appointmentsTable).where(eq(appointmentsTable.id, parsed.data.id));
     return res.status(204).send();
   } catch (err) {
+    if (isDatabaseNotConfiguredError(err)) {
+      return res.status(503).json({ error: "Database is not configured" });
+    }
+
     req.log.error({ err }, "Failed to delete appointment");
     return res.status(500).json({ error: "Internal server error" });
   }

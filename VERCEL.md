@@ -65,8 +65,14 @@ Set all of these in the Vercel project dashboard under **Settings → Environmen
 | `CLERK_PUBLISHABLE_KEY` | `pk_live_...` | From Clerk dashboard |
 | `CLERK_SECRET_KEY` | `sk_live_...` | From Clerk dashboard |
 | `VITE_CLERK_PUBLISHABLE_KEY` | `pk_live_...` | Same as above — needed at Vite build time |
+| `ADMIN_EMAILS` | `andrewalters1997@gmail.com,DR.T.QUACCOO@GMAIL.COM` | Server-side admin/staff access allowlist |
+| `VITE_ADMIN_EMAILS` | `andrewalters1997@gmail.com,DR.T.QUACCOO@GMAIL.COM` | Frontend admin route allowlist |
 | `VITE_CLERK_PROXY_URL` | `https://yourdomain.vercel.app/api/__clerk` | Enables Clerk proxy on your domain. Replace with your actual Vercel URL or custom domain |
 | `SESSION_SECRET` | any 32+ char random string | Used for cookie signing |
+| `RESEND_API_KEY` | `re_...` | Resend API key used to send appointment notifications |
+| `APPOINTMENT_EMAIL_TO` | `DR.T.QUACCOO@GMAIL.COM` | Destination inbox for appointment requests; keep developer/admin emails out of this |
+| `APPOINTMENT_EMAIL_CC` | optional | Optional backup recipients for appointment notifications |
+| `EMAIL_FROM` | `Tobago East Medical Services <onboarding@resend.dev>` | Sender address. Use a verified domain later for a custom address |
 
 > **`VITE_CLERK_PROXY_URL`** — Once you know your Vercel deployment URL (e.g. `https://tobago-medical-hub.vercel.app`), set this to `https://tobago-medical-hub.vercel.app/api/__clerk`. This proxies Clerk's API through your domain, which is required for production Clerk auth to work correctly on a non-Clerk subdomain.
 

@@ -7,6 +7,7 @@ import {
   ClerkProvider,
   useAuth,
   useClerk,
+  useUser,
   SignIn,
   SignUp,
 } from '@clerk/react';
@@ -29,6 +30,12 @@ const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
 // Optional: set VITE_CLERK_PROXY_URL to proxy Clerk through your own domain in production.
 // e.g. https://yourdomain.com/api/__clerk
 const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL as string | undefined;
+const adminEmails = new Set(
+  ((import.meta.env.VITE_ADMIN_EMAILS as string | undefined) ?? '')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean),
+);
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -120,7 +127,8 @@ function ClerkQueryClientSync() {
 // Protected route — redirect to sign-in if not authenticated
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { isLoaded, isSignedIn } = useAuth();
-  if (!isLoaded) {
+  const { user, isLoaded: isUserLoaded } = useUser();
+  if (!isLoaded || !isUserLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F9F5F2]">
         <div className="animate-pulse text-[#7B4435]">Loading...</div>
@@ -128,6 +136,10 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
     );
   }
   if (!isSignedIn) return <Redirect to="/sign-in" />;
+  const email = user?.primaryEmailAddress?.emailAddress.toLowerCase();
+  if (adminEmails.size > 0 && (!email || !adminEmails.has(email))) {
+    return <Redirect to="/" />;
+  }
   return <Component />;
 }
 

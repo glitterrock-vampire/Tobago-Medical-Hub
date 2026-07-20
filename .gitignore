@@ -4,6 +4,7 @@
 dist
 tmp
 out-tsc
+/api
 *.tsbuildinfo
 .expo
 .expo-shared
@@ -31,6 +32,9 @@ node_modules
 /.sass-cache
 /connect.lock
 /coverage
+/.env
+/.env.*
+!/.env.example
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -48,5 +52,4 @@ Thumbs.db
 .cache/
 .local/
 
-# Vercel build output (generated during deploy, not committed)
-/api/
+.vercel

@@ -1,7 +1,15 @@
-import app from "./app";
-import { logger } from "./lib/logger";
+import dotenv from "dotenv";
 
-const port = Number(process.env.PORT ?? '8080');
+dotenv.config({
+  path: [".env.local", ".env", "../../.env.local", "../../.env"],
+});
+
+const [{ default: app }, { logger }] = await Promise.all([
+  import("./app"),
+  import("./lib/logger"),
+]);
+
+const port = Number(process.env.PORT ?? "8080");
 
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${process.env.PORT}"`);

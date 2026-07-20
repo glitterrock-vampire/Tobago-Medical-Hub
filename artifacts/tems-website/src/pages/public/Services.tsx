@@ -4,9 +4,11 @@ import { useListServices } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Stethoscope, Activity, Heart, Eye } from "lucide-react";
+import { defaultServices } from "@/lib/default-services";
 
 export default function Services() {
   const { data: services, isLoading } = useListServices();
+  const serviceList = Array.isArray(services) ? services : defaultServices;
 
   const getIcon = (category: string) => {
     switch(category.toLowerCase()) {
@@ -42,7 +44,7 @@ export default function Services() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services?.map((service, i) => (
+            {serviceList.map((service, i) => (
               <motion.div
                 key={service.id}
                 initial={{ opacity: 0, y: 20 }}

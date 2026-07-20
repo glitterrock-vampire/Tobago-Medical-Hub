@@ -22,9 +22,12 @@ export default function Home() {
               <h1 className="text-5xl md:text-7xl font-serif text-primary mb-6 leading-tight">
                 Compassionate Care <br/>in Tobago East
               </h1>
-              <p className="text-xl text-foreground/80 mb-10 leading-relaxed font-sans max-w-2xl mx-auto">
+              <p className="text-xl text-foreground/80 mb-5 leading-relaxed font-sans max-w-2xl mx-auto">
                 Led by Dr. Thea Quaccoo, Tobago East Medical Services provides expert, personal healthcare tailored to you and your family.
               </p>
+              <div className="w-44 sm:w-56 mx-auto mb-10 text-primary/50">
+                <EKG className="h-12" />
+              </div>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button size="lg" asChild className="w-full sm:w-auto text-base h-12">
                   <Link href="/book">Book an Appointment</Link>
