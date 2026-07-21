@@ -49,7 +49,7 @@ A full-stack medical practice website and CRM for Dr. Thea Quaccoo's practice in
 
 - Doctor: Dr. Thea Quaccoo
 - Phone: +1(868) 486-4537 / 499-2412
-- Address: Windward Main Rd, Kendal, Tobago
+- Address: Kendal, Tobago
 - Email: DR.T.QUACCOO@GMAIL.COM
 
 ## User preferences

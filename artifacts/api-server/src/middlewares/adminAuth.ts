@@ -11,7 +11,14 @@ function parseAdminEmails() {
 }
 
 export const requireAdmin: RequestHandler = async (req, res, next) => {
+  const allowDevAdminBypass =
+    process.env.NODE_ENV !== "production" && process.env.DEV_ADMIN_BYPASS !== "false";
+
   if (!process.env.CLERK_PUBLISHABLE_KEY || !process.env.CLERK_SECRET_KEY) {
+    if (allowDevAdminBypass) {
+      return next();
+    }
+
     return res.status(503).json({ error: "Clerk is not configured" });
   }
 

@@ -46,7 +46,7 @@ export default function About() {
           >
             <h2>A Commitment to Community</h2>
             <p>
-              Dr. Thea Quaccoo established Tobago East Medical Services with a singular vision: to ensure that the residents of Roxborough and the wider Tobago East area have access to reliable, high-quality, and deeply personal medical care.
+              Dr. Thea Quaccoo established Tobago East Medical Services in Kendal with a singular vision: to ensure that residents across Tobago East have access to reliable, high-quality, and deeply personal medical care.
             </p>
             
             <p>

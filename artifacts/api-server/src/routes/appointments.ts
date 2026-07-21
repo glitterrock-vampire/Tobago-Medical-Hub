@@ -20,6 +20,16 @@ import { getDefaultServiceName } from "../lib/defaultServices";
 
 const router = Router();
 
+const emptyAppointmentStats = {
+  totalToday: 0,
+  totalThisWeek: 0,
+  totalThisMonth: 0,
+  totalPending: 0,
+  totalConfirmed: 0,
+  recentAppointments: [],
+  byService: [],
+};
+
 // Helper: build full appointment object with joins
 async function getAppointmentById(db: Awaited<ReturnType<typeof getDb>>, id: number) {
   const rows = await db
@@ -102,7 +112,7 @@ router.get("/appointments", requireAdmin, async (req, res) => {
     return res.json(rows);
   } catch (err) {
     if (isDatabaseNotConfiguredError(err)) {
-      return res.status(503).json({ error: "Database is not configured" });
+      return res.json([]);
     }
 
     req.log.error({ err }, "Failed to list appointments");
@@ -296,7 +306,7 @@ router.get("/appointments/stats", requireAdmin, async (req, res) => {
     });
   } catch (err) {
     if (isDatabaseNotConfiguredError(err)) {
-      return res.status(503).json({ error: "Database is not configured" });
+      return res.json(emptyAppointmentStats);
     }
 
     req.log.error({ err }, "Failed to get appointment stats");

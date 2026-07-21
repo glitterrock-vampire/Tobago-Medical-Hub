@@ -39,7 +39,7 @@ router.get("/contact/enquiries", requireAdmin, async (req, res) => {
     return res.json(enquiries);
   } catch (err) {
     if (isDatabaseNotConfiguredError(err)) {
-      return res.status(503).json({ error: "Database is not configured" });
+      return res.json([]);
     }
 
     req.log.error({ err }, "Failed to list enquiries");

@@ -25,7 +25,10 @@ import Appointments from '@/pages/admin/Appointments';
 import Patients from '@/pages/admin/Patients';
 import Enquiries from '@/pages/admin/Enquiries';
 
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string;
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+const isClerkConfigured = Boolean(clerkPubKey);
+const allowDevAdminBypass =
+  import.meta.env.DEV && import.meta.env.VITE_DEV_ADMIN_BYPASS !== 'false';
 
 // Optional: set VITE_CLERK_PROXY_URL to proxy Clerk through your own domain in production.
 // e.g. https://yourdomain.com/api/__clerk
@@ -124,8 +127,29 @@ function ClerkQueryClientSync() {
   return null;
 }
 
-// Protected route — redirect to sign-in if not authenticated
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  if (!isClerkConfigured) {
+    if (allowDevAdminBypass) {
+      return <Component />;
+    }
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F9F5F2] px-4">
+        <div className="max-w-md rounded-lg border border-[#E8C5B8] bg-white p-6 text-center shadow-sm">
+          <h1 className="font-serif text-2xl text-[#7B4435]">Admin sign-in is not configured</h1>
+          <p className="mt-3 text-sm leading-6 text-[#6f5757]">
+            Add your Clerk publishable key to open the protected admin portal.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return <ClerkProtectedRoute component={Component} />;
+}
+
+// Protected route — redirect to sign-in if not authenticated
+function ClerkProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { isLoaded, isSignedIn } = useAuth();
   const { user, isLoaded: isUserLoaded } = useUser();
   if (!isLoaded || !isUserLoaded) {
@@ -144,6 +168,10 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
 }
 
 function SignInPage() {
+  if (!isClerkConfigured) {
+    return <Redirect to="/admin" />;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F9F5F2] px-4">
       <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
@@ -152,6 +180,10 @@ function SignInPage() {
 }
 
 function SignUpPage() {
+  if (!isClerkConfigured) {
+    return <Redirect to="/admin" />;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F9F5F2] px-4">
       <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
@@ -194,6 +226,17 @@ function Router() {
 
 function ClerkProviderWithRoutes() {
   const [, setLocation] = useLocation();
+
+  if (!isClerkConfigured) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Router />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <ClerkProvider

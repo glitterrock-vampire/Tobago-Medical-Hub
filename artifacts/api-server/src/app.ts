@@ -47,7 +47,14 @@ if (process.env.CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY) {
     }),
   );
 } else {
-  logger.warn("Clerk API keys are not configured; admin routes will be unavailable");
+  const allowDevAdminBypass =
+    process.env.NODE_ENV !== "production" && process.env.DEV_ADMIN_BYPASS !== "false";
+
+  logger.warn(
+    allowDevAdminBypass
+      ? "Clerk API keys are not configured; using local development admin bypass"
+      : "Clerk API keys are not configured; admin routes will be unavailable",
+  );
 }
 
 app.use("/api", router);

@@ -67,7 +67,7 @@ router.get("/patients", requireAdmin, async (req, res) => {
     return res.json(rows);
   } catch (err) {
     if (isDatabaseNotConfiguredError(err)) {
-      return res.status(503).json({ error: "Database is not configured" });
+      return res.json([]);
     }
 
     req.log.error({ err }, "Failed to list patients");

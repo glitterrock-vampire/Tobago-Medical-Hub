@@ -4,35 +4,57 @@ import { Button } from "@/components/ui/button";
 import { MapPin, HeartPulse, UserRound, ArrowRight } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { EKG } from "@/components/shared/EKG";
+import heroMedicalCenter from "@assets/tobago-medical-center-hero.jpg";
 import drPhoto from "@assets/0_PHOTO-2026-07-16-23-05-10_1784263561449.jpg";
 
 export default function Home() {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-secondary/5 -z-10" />
+      <section className="relative min-h-[620px] overflow-hidden flex items-center bg-secondary">
+        <img
+          src={heroMedicalCenter}
+          alt="Tobago Medical Center"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/82 via-primary/42 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-primary/30" />
+        <svg
+          className="heartbeat-overlay"
+          viewBox="0 0 1200 300"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            className="heartbeat-glow"
+            d="M0 170 H165 L205 170 L245 55 L300 245 L345 150 L380 170 H570 L610 170 L640 125 L680 205 L720 170 H1200"
+          />
+          <path
+            className="heartbeat-line"
+            d="M0 170 H165 L205 170 L245 55 L300 245 L345 150 L380 170 H570 L610 170 L640 125 L680 205 L720 170 H1200"
+          />
+        </svg>
         <div className="container mx-auto px-4 md:px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-2xl pt-24 pb-20 text-left drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)]">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-5xl md:text-7xl font-serif text-primary mb-6 leading-tight">
+              <h1 className="text-5xl md:text-7xl font-serif text-white mb-6 leading-tight">
                 Compassionate Care <br/>in Tobago East
               </h1>
-              <p className="text-xl text-foreground/80 mb-5 leading-relaxed font-sans max-w-2xl mx-auto">
+              <p className="text-xl text-white/88 mb-5 leading-relaxed font-sans max-w-2xl">
                 Led by Dr. Thea Quaccoo, Tobago East Medical Services provides expert, personal healthcare tailored to you and your family.
               </p>
-              <div className="w-44 sm:w-56 mx-auto mb-10 text-primary/50">
+              <div className="w-44 sm:w-56 mb-10 text-white/65">
                 <EKG className="h-12" />
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button size="lg" asChild className="w-full sm:w-auto text-base h-12">
                   <Link href="/book">Book an Appointment</Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="w-full sm:w-auto text-base h-12">
+                <Button size="lg" variant="outline" asChild className="w-full sm:w-auto text-base h-12 border-white/70 bg-white/10 text-white hover:bg-white hover:text-primary">
                   <Link href="/services">Our Services</Link>
                 </Button>
               </div>
@@ -40,10 +62,6 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Decorative elements */}
-        <div className="absolute top-1/2 left-0 w-full opacity-[0.03] text-primary pointer-events-none -z-10 -translate-y-1/2 overflow-hidden flex">
-           <EKG className="w-full min-w-[800px] h-32" />
-        </div>
       </section>
 
       {/* Highlights */}
@@ -59,7 +77,7 @@ export default function Home() {
               {
                 icon: MapPin,
                 title: "Community Focused",
-                desc: "Located right here in Roxborough, dedicated to the health and wellness of the Tobago East community."
+                desc: "Located in Kendal, dedicated to the health and wellness of the Tobago East community."
               },
               {
                 icon: HeartPulse,

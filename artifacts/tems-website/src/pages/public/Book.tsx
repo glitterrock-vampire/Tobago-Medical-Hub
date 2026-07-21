@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLocation } from "wouter";
-import { defaultServices } from "@/lib/default-services";
+import { defaultServices, servicePrices } from "@/lib/default-services";
 
 const bookSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -236,8 +236,10 @@ export default function Book() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Morning">Morning (8am - 12pm)</SelectItem>
-                            <SelectItem value="Afternoon">Afternoon (12pm - 4pm)</SelectItem>
+                            <SelectItem value="Morning">Morning</SelectItem>
+                            <SelectItem value="Afternoon">Afternoon</SelectItem>
+                            <SelectItem value="Evening">Evening</SelectItem>
+                            <SelectItem value="Flexible">Flexible / first available</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -267,6 +269,12 @@ export default function Book() {
                       </FormItem>
                     )}
                   />
+                )}
+
+                {selectedService && servicePrices[selectedService.id] && (
+                  <div className="rounded-md border border-primary/10 bg-primary/5 px-4 py-3 text-sm font-medium text-primary">
+                    {servicePrices[selectedService.id]}
+                  </div>
                 )}
 
                 {isHomeVisit && (

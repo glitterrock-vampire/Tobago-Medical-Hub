@@ -88,8 +88,7 @@ export default function Contact() {
                   <div>
                     <h4 className="font-medium text-sm text-foreground/80 mb-1">Address</h4>
                     <p className="text-muted-foreground text-sm leading-relaxed">
-                      Roxborough<br/>
-                      Tobago East<br/>
+                      Kendal, Tobago<br/>
                       Trinidad & Tobago
                     </p>
                   </div>
@@ -101,7 +100,7 @@ export default function Contact() {
                   <div>
                     <h4 className="font-medium text-sm text-foreground/80 mb-1">Phone</h4>
                     <p className="text-muted-foreground text-sm">
-                      (868) 555-0192
+                      1 (868) 320-5811
                     </p>
                   </div>
                 </li>
@@ -112,7 +111,7 @@ export default function Contact() {
                   <div>
                     <h4 className="font-medium text-sm text-foreground/80 mb-1">Email</h4>
                     <p className="text-muted-foreground text-sm">
-                      care@tems.tt
+                      dr.t.quaccoo@gmail.com
                     </p>
                   </div>
                 </li>
@@ -123,9 +122,9 @@ export default function Contact() {
                   <div>
                     <h4 className="font-medium text-sm text-foreground/80 mb-1">Hours</h4>
                     <p className="text-muted-foreground text-sm leading-relaxed">
-                      Mon - Fri: 8:00 AM - 4:00 PM<br/>
-                      Sat: 9:00 AM - 1:00 PM<br/>
-                      Sun: Closed
+                      Flexible opening hours<br/>
+                      Available by appointment<br/>
+                      No fixed closed day
                     </p>
                   </div>
                 </li>

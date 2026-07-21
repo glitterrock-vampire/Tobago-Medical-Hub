@@ -10,9 +10,46 @@ import {
 } from "lucide-react";
 import { useClerk } from "@clerk/react";
 
+const isClerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+
+function ClerkSignOutButton({
+  className,
+  iconClassName,
+}: {
+  className: string;
+  iconClassName: string;
+}) {
+  const { signOut } = useClerk();
+
+  return (
+    <button onClick={() => signOut({ redirectUrl: '/' })} className={className}>
+      <LogOut className={iconClassName} />
+      <span className="hidden md:inline">Sign Out</span>
+    </button>
+  );
+}
+
+function AdminExitButton({
+  className,
+  iconClassName,
+}: {
+  className: string;
+  iconClassName: string;
+}) {
+  if (isClerkConfigured) {
+    return <ClerkSignOutButton className={className} iconClassName={iconClassName} />;
+  }
+
+  return (
+    <Link href="/" className={className}>
+      <LogOut className={iconClassName} />
+      <span className="hidden md:inline">Exit Admin</span>
+    </Link>
+  );
+}
+
 export function AdminLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
-  const { signOut } = useClerk();
 
   const navItems = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -52,13 +89,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="p-4 border-t">
-          <button 
-            onClick={() => signOut({ redirectUrl: '/' })}
+          <AdminExitButton
             className="flex w-full items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </button>
+            iconClassName="h-4 w-4"
+          />
         </div>
       </aside>
 
@@ -70,9 +104,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             <Stethoscope className="h-5 w-5 text-primary" />
             <span className="font-serif font-bold text-primary">TEMS Admin</span>
           </div>
-          <button onClick={() => signOut({ redirectUrl: '/' })} className="text-muted-foreground">
-            <LogOut className="h-5 w-5" />
-          </button>
+          <AdminExitButton className="text-muted-foreground" iconClassName="h-5 w-5" />
         </header>
 
         {/* Page Content */}

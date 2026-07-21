@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import { useListServices } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Stethoscope, Activity, Heart, Eye } from "lucide-react";
-import { defaultServices } from "@/lib/default-services";
+import { Stethoscope, Activity, Heart, Eye, Camera, Printer } from "lucide-react";
+import { defaultServices, servicePrices } from "@/lib/default-services";
 
 export default function Services() {
   const { data: services, isLoading } = useListServices();
@@ -15,6 +15,8 @@ export default function Services() {
       case 'general': return <Activity className="w-6 h-6" />;
       case 'specialist': return <Heart className="w-6 h-6" />;
       case 'checkup': return <Eye className="w-6 h-6" />;
+      case 'photos': return <Camera className="w-6 h-6" />;
+      case 'documents': return <Printer className="w-6 h-6" />;
       default: return <Stethoscope className="w-6 h-6" />;
     }
   };
@@ -65,6 +67,12 @@ export default function Services() {
                 <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
                   {service.description}
                 </p>
+
+                {servicePrices[service.id] && (
+                  <div className="mb-6 rounded-md border border-primary/10 bg-primary/5 px-3 py-2 text-sm font-medium text-primary">
+                    {servicePrices[service.id]}
+                  </div>
+                )}
                 
                 <div className="flex flex-col gap-2 mt-auto text-sm text-foreground/70 font-medium">
                   <div className="flex items-center justify-between border-b pb-2">

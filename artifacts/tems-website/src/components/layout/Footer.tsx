@@ -37,15 +37,15 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 text-secondary" />
-                <span>Roxborough, Tobago<br/>Trinidad & Tobago</span>
+                <span>Kendal, Tobago<br/>Trinidad & Tobago</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-secondary" />
-                <span>(868) 555-0192</span>
+                <span>1 (868) 320-5811</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-secondary" />
-                <span>care@tems.tt</span>
+                <span>dr.t.quaccoo@gmail.com</span>
               </li>
             </ul>
           </div>
@@ -53,9 +53,9 @@ export function Footer() {
           <div>
             <h3 className="font-serif font-medium mb-4 text-lg">Hours</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex justify-between"><span>Mon - Fri:</span> <span>8:00 AM - 4:00 PM</span></li>
-              <li className="flex justify-between"><span>Saturday:</span> <span>9:00 AM - 1:00 PM</span></li>
-              <li className="flex justify-between"><span>Sunday:</span> <span>Closed</span></li>
+              <li>Flexible opening hours</li>
+              <li>Available by appointment</li>
+              <li>No fixed closed day</li>
               <li className="mt-4 pt-4 border-t text-xs text-primary font-medium">Home visits available by appointment</li>
             </ul>
           </div>
