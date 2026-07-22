@@ -143,24 +143,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-primary/10 bg-card">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid gap-px overflow-hidden md:grid-cols-3">
-            {quickInfo.map((item) => (
-              <div key={item.label} className="flex items-center gap-4 bg-card py-6 md:px-6">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                  <item.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">{item.label}</p>
-                  <p className="text-sm text-muted-foreground">{item.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="bg-background py-24">
         <div className="container mx-auto px-4 md:px-6">
           <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
