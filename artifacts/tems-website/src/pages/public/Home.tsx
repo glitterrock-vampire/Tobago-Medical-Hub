@@ -7,7 +7,6 @@ import {
   CalendarCheck,
   Camera,
   Clock,
-  FileText,
   HeartPulse,
   MapPin,
   Phone,
@@ -18,7 +17,6 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { EKG } from "@/components/shared/EKG";
 import heroMedicalCenter from "@assets/tobago-medical-center-hero.jpg";
 import drPhoto from "@assets/0_PHOTO-2026-07-16-23-05-10_1784263561449.jpg";
-import clinicRoom from "@assets/2_IMG_1142_1784263581387.jpg";
 
 const quickInfo = [
   { icon: MapPin, label: "Kendal, Tobago", value: "Serving Tobago East" },
@@ -201,20 +199,6 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-8 grid gap-4 rounded-lg border border-primary/10 bg-primary/5 p-5 text-sm text-primary md:grid-cols-3">
-            <div className="flex items-center gap-3">
-              <BadgeCheck className="h-5 w-5" />
-              <span>Food badge: $100, or $80 each for groups of 8+</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Camera className="h-5 w-5" />
-              <span>Passport photos: 2 for $25 or 4 for $45</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5" />
-              <span>Printing: black and white $2, colour from $4</span>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -225,26 +209,13 @@ export default function Home() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative min-h-[460px]"
+              className="relative min-h-[560px] overflow-hidden rounded-lg border border-secondary/20 bg-muted shadow-sm md:min-h-[680px]"
             >
-              <div className="absolute left-0 top-0 h-[78%] w-[78%] overflow-hidden rounded-lg border border-secondary/20 bg-muted">
-                <img
-                  src={drPhoto}
-                  alt="Dr. Thea Quaccoo"
-                  className="h-full w-full object-cover object-top"
-                />
-              </div>
-              <div className="absolute bottom-0 right-0 h-[46%] w-[54%] overflow-hidden rounded-lg border-4 border-card bg-muted shadow-lg">
-                <img
-                  src={clinicRoom}
-                  alt="Clinic interior"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="absolute bottom-6 left-6 rounded-md bg-primary px-4 py-3 text-white shadow-lg">
-                <p className="font-serif text-xl">Dr. Thea Quaccoo</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-white/65">General Practitioner</p>
-              </div>
+              <img
+                src={drPhoto}
+                alt="Dr. Thea Quaccoo"
+                className="h-full w-full object-cover object-top"
+              />
             </motion.div>
 
             <motion.div
@@ -258,6 +229,9 @@ export default function Home() {
               <h2 className="mb-6 text-4xl font-serif text-primary md:text-5xl">
                 Care that feels personal, practical, and close.
               </h2>
+              <p className="mb-6 font-serif text-2xl text-foreground">
+                Dr. Thea Quaccoo
+              </p>
               <p className="mb-6 text-lg leading-relaxed text-foreground/80">
                 At Tobago East Medical Services, healthcare is more than treating symptoms. It is listening carefully, helping patients understand their options, and making routine medical needs easier to handle.
               </p>
