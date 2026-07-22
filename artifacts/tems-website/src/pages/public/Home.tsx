@@ -209,13 +209,21 @@ export default function Home() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative min-h-[560px] overflow-hidden rounded-lg border border-secondary/20 bg-muted shadow-sm md:min-h-[680px]"
+              className="mx-auto w-full max-w-[420px]"
             >
-              <img
-                src={drPhoto}
-                alt="Dr. Thea Quaccoo"
-                className="h-full w-full object-cover object-top"
-              />
+              <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-secondary/20 bg-muted shadow-sm">
+                <img
+                  src={drPhoto}
+                  alt="Dr. Thea Quaccoo"
+                  className="h-full w-full object-cover object-top"
+                />
+              </div>
+              <div className="mt-4 rounded-lg border border-primary/10 bg-background p-5 text-center shadow-sm">
+                <p className="font-serif text-2xl text-primary">Dr. Thea Quaccoo</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  General Practitioner
+                </p>
+              </div>
             </motion.div>
 
             <motion.div
@@ -229,9 +237,6 @@ export default function Home() {
               <h2 className="mb-6 text-4xl font-serif text-primary md:text-5xl">
                 Care that feels personal, practical, and close.
               </h2>
-              <p className="mb-6 font-serif text-2xl text-foreground">
-                Dr. Thea Quaccoo
-              </p>
               <p className="mb-6 text-lg leading-relaxed text-foreground/80">
                 At Tobago East Medical Services, healthcare is more than treating symptoms. It is listening carefully, helping patients understand their options, and making routine medical needs easier to handle.
               </p>
