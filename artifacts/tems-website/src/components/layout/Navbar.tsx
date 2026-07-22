@@ -2,7 +2,85 @@ import { Link, useLocation } from "wouter";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { UserButton, useAuth } from "@clerk/react";
 import logoImg from "@assets/0_Business_Card_1784263553137.png";
+
+const isClerkConfigured = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+
+function AuthControls({
+  mobile = false,
+  onNavigate,
+}: {
+  mobile?: boolean;
+  onNavigate?: () => void;
+}) {
+  const baseClass = mobile
+    ? "inline-flex w-full items-center justify-center rounded-md border border-primary/20 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/5"
+    : "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-foreground/70 transition-colors hover:text-primary";
+
+  const primaryClass = mobile
+    ? "inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+    : "inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90";
+
+  if (!isClerkConfigured) {
+    return (
+      <Link href="/admin" className={baseClass} onClick={onNavigate}>
+        Staff Portal
+      </Link>
+    );
+  }
+
+  return (
+    <ClerkAuthControls
+      baseClass={baseClass}
+      primaryClass={primaryClass}
+      mobile={mobile}
+      onNavigate={onNavigate}
+    />
+  );
+}
+
+function ClerkAuthControls({
+  baseClass,
+  primaryClass,
+  mobile,
+  onNavigate,
+}: {
+  baseClass: string;
+  primaryClass: string;
+  mobile: boolean;
+  onNavigate?: () => void;
+}) {
+  const { isLoaded, isSignedIn } = useAuth();
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (isSignedIn) {
+    return (
+      <>
+        <Link href="/admin" className={baseClass} onClick={onNavigate}>
+          Admin
+        </Link>
+        <div className={mobile ? "flex justify-center pt-1" : "flex items-center pl-1"}>
+          <UserButton afterSignOutUrl="/" />
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Link href="/sign-in" className={baseClass} onClick={onNavigate}>
+        Sign In
+      </Link>
+      <Link href="/sign-up" className={primaryClass} onClick={onNavigate}>
+        Sign Up
+      </Link>
+    </>
+  );
+}
 
 export function Navbar() {
   const [location] = useLocation();
@@ -55,6 +133,7 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-2">
+            <AuthControls />
             <Link href="/book" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">
               Book Appointment
             </Link>
@@ -85,6 +164,9 @@ export function Navbar() {
             >
               Book Appointment
             </Link>
+            <div className="flex flex-col gap-3 border-t border-border pt-4">
+              <AuthControls mobile onNavigate={() => setIsOpen(false)} />
+            </div>
           </div>
         </div>
       )}
